@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary SEO -->
+    <title>6×4 Photo Grid Generator — Print Wallet-Size Photos at Home</title>
+    <meta name="description" content="Free online 6×4 photo grid generator. Crop a photo square and make a print-ready 3×2 grid of wallet-size photos at full resolution — download as JPG or print at 6×4 inches. Runs entirely in your browser.">
+    <meta name="keywords" content="photo grid generator, 6x4 photo print, wallet size photos, passport photo grid, 3x2 photo layout, print photos at home, 4x6 photo collage">
+    <meta name="author" content="zpatel-dev">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#007bff">
+    <link rel="canonical" href="https://zpatel-dev.github.io/photo-grid-generator/">
+
+    <!-- Open Graph (Facebook, LinkedIn, etc.) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="6×4 Photo Grid Generator">
+    <meta property="og:title" content="6×4 Photo Grid Generator — Print Wallet-Size Photos">
+    <meta property="og:description" content="Crop a photo square and make a print-ready 3×2 grid of wallet-size photos at full resolution. Download JPG or print at 6×4 inches.">
+    <meta property="og:url" content="https://zpatel-dev.github.io/photo-grid-generator/">
+    <meta property="og:image" content="https://zpatel-dev.github.io/photo-grid-generator/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="6×4 photo grid generator — a 3×2 grid of wallet-size photos">
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="6×4 Photo Grid Generator — Print Wallet-Size Photos">
+    <meta name="twitter:description" content="Crop square and make a print-ready 3×2 grid of wallet-size photos at full resolution. Download JPG or print at 6×4 inches.">
+    <meta name="twitter:image" content="https://zpatel-dev.github.io/photo-grid-generator/og-image.png">
+
+    <!-- Inline SVG favicon (no extra file required) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%23007bff'/%3E%3Cg fill='%23ffffff'%3E%3Crect x='4' y='8' width='4' height='3.5'/%3E%3Crect x='10' y='8' width='4' height='3.5'/%3E%3Crect x='16' y='8' width='4' height='3.5'/%3E%3Crect x='4' y='13' width='4' height='3.5'/%3E%3Crect x='10' y='13' width='4' height='3.5'/%3E%3Crect x='16' y='13' width='4' height='3.5'/%3E%3C/g%3E%3C/svg%3E">
+
+    <!-- Structured data: WebApplication -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "6×4 Photo Grid Generator",
+        "url": "https://zpatel-dev.github.io/photo-grid-generator/",
+        "description": "Free online tool to crop a photo square and generate a print-ready 3×2 grid of wallet-size photos at full resolution, for 6×4 inch prints.",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Any (web browser)",
+        "browserRequirements": "Requires JavaScript",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+    </script>
+
+    <!-- Cropper.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --panel-bg: #ffffff;
+            --primary: #007bff;
+            --primary-hover: #0056b3;
+            --text: #333;
+            --muted: #6b7280;
+            --border: #ddd;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 12px;
+        }
+
+        .app-header {
+            text-align: center;
+            margin: 4px 0 14px;
+        }
+
+        .app-header h1 {
+            font-size: 1.35rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .app-header .sub {
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        /* ---- Layout ---- */
+        .workspace {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            padding: 14px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            flex: 1 1 340px;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .panel-head h2 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        /* ---- Buttons ---- */
+        button {
+            font-family: inherit;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Ghost icon button (open in new tab) */
+        .icon-btn {
+            background: transparent;
+            border: none;
+            padding: 4px;
+            color: var(--primary);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            line-height: 0;
+        }
+
+        .icon-btn:hover {
+            background: transparent;
+            color: var(--primary-hover);
+        }
+
+        .icon-btn svg { width: 20px; height: 20px; }
+
+        /* Text-link button (Replace photo) */
+        .link-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 2px 4px;
+        }
+
+        .link-btn:hover {
+            background: transparent;
+            text-decoration: underline;
+        }
+
+        /* ---- Upload / crop ---- */
+        .editor-container {
+            position: relative;
+            width: 100%;
+            height: clamp(240px, 44vh, 420px);
+            background-color: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px dashed #cfd6dd;
+            border-radius: 8px;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .editor-container.dragover {
+            border-color: var(--primary);
+            background: rgba(0,123,255,0.06);
+        }
+
+        /* The empty-state click target fills the whole box */
+        .upload-prompt {
+            background: transparent;
+            color: var(--muted);
+            border: none;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .upload-prompt:hover {
+            background: rgba(0,123,255,0.04);
+            color: var(--primary);
+        }
+
+        .upload-prompt svg { width: 38px; height: 38px; opacity: 0.8; }
+        .upload-prompt .hint { font-size: 12px; opacity: 0.75; }
+
+        #image-to-crop {
+            max-width: 100%;
+            display: none; /* shown once an image is loaded */
+        }
+
+        /* ---- Preview settings ---- */
+        .settings {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            margin-bottom: 12px;
+        }
+
+        .field {
+            flex: 1 1 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .field > .field-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+        }
+
+        .field output { color: var(--primary); font-variant-numeric: tabular-nums; }
+
+        .field input[type="range"] {
+            width: 100%;
+            height: 34px;
+            accent-color: var(--primary);
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .field select {
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        /* The actual canvas keeps its high-res format; CSS scales it for preview */
+        #result-canvas {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            aspect-ratio: 3 / 2;
+            border: 1px solid #e2e6ea;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+            background-color: white;
+        }
+
+        /* ---- Export actions (live with the output) ---- */
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .actions button {
+            flex: 1;
+            min-height: 44px;
+        }
+
+        .actions .secondary {
+            background: #eef2f7;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .actions .secondary:hover { background: #e2e8f0; }
+
+        /* ---- Resolution readouts ---- */
+        .dims {
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .dims span {
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .dims .warn {
+            display: block;
+            margin-top: 4px;
+            color: #c0392b;
+            font-weight: 600;
+        }
+
+        /* ---- Footer (also gives crawlers descriptive text) ---- */
+        .page-footer {
+            max-width: 760px;
+            margin: 18px auto 8px;
+            text-align: center;
+            font-size: 12.5px;
+            line-height: 1.6;
+            color: var(--muted);
+        }
+
+        .page-footer p { margin: 0; }
+
+        /* ---- Phone tweaks ---- */
+        @media (max-width: 640px) {
+            .app-header h1 { font-size: 1.2rem; }
+            .field { flex-basis: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <h1>Photo Grid Generator <span class="sub">· 4 x 6</span></h1>
+    </header>
+
+    <div class="workspace">
+
+        <!-- YOUR PHOTO: upload + crop -->
+        <div class="panel">
+            <div class="panel-head">
+                <h2>Your Photo</h2>
+                <button id="replaceBtn" class="link-btn" type="button" hidden>Replace photo</button>
+            </div>
+
+            <div class="editor-container" id="dropzone">
+                <button id="placeholder-text" class="upload-prompt" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Click to add a photo, or drop one here</span>
+                    <span class="hint">PNG, JPG or WebP</span>
+                </button>
+                <img id="image-to-crop" alt="">
+                <input type="file" id="upload" accept="image/png, image/jpeg, image/webp" hidden>
+            </div>
+
+            <div class="dims">
+                <div>Original image: <span id="dim-original">&mdash;</span></div>
+                <div>Cropped square (source): <span id="dim-crop">&mdash;</span></div>
+            </div>
+        </div>
+
+        <!-- PREVIEW: settings + grid + export -->
+        <div class="panel">
+            <div class="panel-head">
+                <h2>Preview &mdash; 3 × 2 grid</h2>
+                <button id="openTabBtn" class="icon-btn" type="button" title="Open image in new tab to view / download">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="settings">
+                <label class="field" for="margin">
+                    <span class="field-label">White margin <output id="marginValue">2%</output></span>
+                    <input type="range" id="margin" min="0" max="20" step="1" value="2">
+                </label>
+                <label class="field" for="outputMode">
+                    <span class="field-label">Output</span>
+                    <select id="outputMode">
+                        <option value="full">Full resolution</option>
+                        <option value="print300">Fixed 6x4 @ 300 DPI</option>
+                    </select>
+                </label>
+            </div>
+
+            <!-- Canvas represents 6x4 inches; resolution depends on the source + mode -->
+            <canvas id="result-canvas"></canvas>
+
+            <div class="dims">
+                <div>Each photo (in grid): <span id="dim-photo">&mdash;</span></div>
+                <div>Download / print file: <span id="dim-download">&mdash;</span></div>
+                <div id="dim-warn" class="warn"></div>
+            </div>
+
+            <div class="actions">
+                <button id="downloadBtn" type="button">Download JPG</button>
+                <button id="printBtn" type="button" class="secondary">Print</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="page-footer">
+        <p>A free 6×4 photo grid generator that tiles one square photo into a print-ready 3×2 grid sized for a standard 6×4 inch (10×15 cm) print — ideal for wallet-size photos, ID/passport-style prints, and craft projects. Everything runs in your browser, so your images never leave your device.</p>
+    </footer>
+
+    <!-- Cropper.js Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
+    <script>
+        // DOM Elements
+        const uploadInput = document.getElementById('upload');
+        const dropzone = document.getElementById('dropzone');
+        const marginInput = document.getElementById('margin');
+        const marginValue = document.getElementById('marginValue');
+        const imageElement = document.getElementById('image-to-crop');
+        const placeholderText = document.getElementById('placeholder-text');
+        const replaceBtn = document.getElementById('replaceBtn');
+        const canvas = document.getElementById('result-canvas');
+        const ctx = canvas.getContext('2d');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const printBtn = document.getElementById('printBtn');
+
+        // Resolution readout elements
+        const dimOriginal = document.getElementById('dim-original');
+        const dimCrop = document.getElementById('dim-crop');
+        const dimPhoto = document.getElementById('dim-photo');
+        const dimDownload = document.getElementById('dim-download');
+        const dimWarn = document.getElementById('dim-warn');
+        const openTabBtn = document.getElementById('openTabBtn');
+        const outputModeSelect = document.getElementById('outputMode');
+
+        // Persist the white margin between sessions (default 2)
+        const MARGIN_STORAGE_KEY = 'photoGrid.whiteMargin';
+        const savedMargin = localStorage.getItem(MARGIN_STORAGE_KEY);
+        if (savedMargin !== null) marginInput.value = savedMargin;
+        marginValue.textContent = `${marginInput.value}%`;
+
+        // Constants for 6x4 inch print at 300 DPI
+        const DPI = 300;
+        const CANVAS_WIDTH = 6 * DPI;  // 1800px
+        const CANVAS_HEIGHT = 4 * DPI; // 1200px
+
+        // Full-resolution output cap: 7200px wide over a 6in sheet = 1200 DPI.
+        // Beyond any photo printer, keeps files sane, and stays well under the
+        // browser canvas limit (~16384px/side) so the canvas never blanks out.
+        const MAX_CANVAS_SIDE = 7200;
+        const MAX_CANVAS_AREA = 268000000; // ~Chrome area cap; safety net if the side cap is raised
+
+        // Setup Canvas Resolution
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
+
+        let cropper = null;
+        let renderTimeout = null;
+
+        // Fill initial canvas with white
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        // Output dimensions depend on the source crop + chosen mode; set in renderGrid()
+        dimDownload.textContent = '—';
+
+        // 1. Upload — shared by the click target, the hidden input, and drag-drop
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                imageElement.src = event.target.result;
+                imageElement.style.display = 'block';
+                placeholderText.style.display = 'none';
+                replaceBtn.hidden = false;
+
+                if (cropper) cropper.destroy();
+
+                cropper = new Cropper(imageElement, {
+                    aspectRatio: 1, // Force square crop
+                    viewMode: 1,
+                    autoCropArea: 0.8,
+                    ready: function () {
+                        // Full uploaded resolution (independent of the crop selection)
+                        const img = cropper.getImageData();
+                        dimOriginal.textContent =
+                            `${Math.round(img.naturalWidth)} × ${Math.round(img.naturalHeight)} px`;
+                    },
+                    crop: function () {
+                        // Debounce the render to prevent UI lag while dragging
+                        cancelAnimationFrame(renderTimeout);
+                        renderTimeout = requestAnimationFrame(renderGrid);
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        uploadInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+        placeholderText.addEventListener('click', () => uploadInput.click());
+        replaceBtn.addEventListener('click', () => uploadInput.click());
+
+        // Drag-and-drop onto the crop box
+        ['dragenter', 'dragover'].forEach((ev) =>
+            dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); }));
+        ['dragleave', 'drop'].forEach((ev) =>
+            dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); }));
+        dropzone.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]));
+
+        // Re-render when margin changes; update the value bubble and remember the setting
+        marginInput.addEventListener('input', () => {
+            marginValue.textContent = `${marginInput.value}%`;
+            localStorage.setItem(MARGIN_STORAGE_KEY, marginInput.value);
+            if (cropper) renderGrid();
+        });
+
+        // Re-render when output mode changes
+        outputModeSelect.addEventListener('change', () => {
+            if (cropper) renderGrid();
+        });
+
+        // 2. Render the 3x2 Grid onto the Canvas
+        function renderGrid() {
+            if (!cropper) return;
+
+            const cols = 3;
+            const rows = 2;
+            const marginPercent = parseFloat(marginInput.value) || 0;
+            const fullRes = outputModeSelect.value === 'full';
+
+            // Source square at its TRUE native resolution. WARNING: getCroppedCanvas()'s
+            // maxWidth/maxHeight UPSCALE a small crop up to the max (cropper.js quirk), so we
+            // must NOT use them. Take the native crop as-is, and only pass an explicit size
+            // when the crop itself is larger than we could render.
+            const cropNative = cropper.getData(true);
+            const cropPx = Math.round(Math.min(cropNative.width, cropNative.height));
+            let croppedCanvas;
+            if (fullRes) {
+                croppedCanvas = (cropPx > MAX_CANVAS_SIDE)
+                    ? cropper.getCroppedCanvas({ width: MAX_CANVAS_SIDE, height: MAX_CANVAS_SIDE })
+                    : cropper.getCroppedCanvas();
+            } else {
+                croppedCanvas = cropper.getCroppedCanvas({ width: 600, height: 600 });
+            }
+
+            if (!croppedCanvas) return;
+
+            // Margin is always a percent of the CROPPED PHOTO (not the whole sheet/cell).
+            let drawSize, marginPx, cellSize;
+            if (fullRes) {
+                // Each photo drawn at the crop's true resolution; grid scales with the source
+                drawSize = croppedCanvas.width;              // square: width === height
+                marginPx = drawSize * marginPercent / 100;
+                cellSize = drawSize + (2 * marginPx);
+            } else {
+                // Fixed 6x4 @ 300 DPI: cell stays 600 (sheet = 1800x1200); the photo shrinks
+                // so the margin is still marginPercent% of the photo itself.
+                cellSize = (6 * DPI) / cols;                 // 600
+                drawSize = cellSize / (1 + 2 * marginPercent / 100);
+                marginPx = drawSize * marginPercent / 100;
+            }
+
+            // Canvas = cell x cols by cell x rows, so the sheet stays 3:2 (6x4 proportion)
+            let canvasWidth = Math.round(cellSize * cols);
+            let canvasHeight = Math.round(cellSize * rows);
+
+            // Clamp to a renderable size: scale the whole grid down by whichever of the
+            // per-side or total-area limit binds first (no-op in fixed-300 mode).
+            const sideScale = Math.min(1, MAX_CANVAS_SIDE / Math.max(canvasWidth, canvasHeight));
+            const areaScale = Math.min(1, Math.sqrt(MAX_CANVAS_AREA / (canvasWidth * canvasHeight)));
+            const scale = Math.min(sideScale, areaScale);
+            if (scale < 1) {
+                drawSize *= scale;
+                marginPx *= scale;
+                cellSize *= scale;
+                canvasWidth = Math.round(cellSize * cols);
+                canvasHeight = Math.round(cellSize * rows);
+            }
+
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            // Clear background to white
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            // Loop through columns and rows to draw 6 images
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const startX = (c * cellSize) + marginPx;
+                    const startY = (r * cellSize) + marginPx;
+                    ctx.drawImage(croppedCanvas, startX, startY, drawSize, drawSize);
+                }
+            }
+
+            // --- Resolution readouts ---
+            // True captured resolution of the selected square (source-image pixels)
+            dimCrop.textContent = `${cropNative.width} × ${cropNative.height} px`;
+
+            // Each tiled photo, plus the effective print density (sheet is 6in wide)
+            const photoPx = Math.round(drawSize);
+            const effectiveDpi = Math.round(canvasWidth / 6);
+            const photoInches = (photoPx / effectiveDpi).toFixed(2);
+            dimPhoto.textContent =
+                `${photoPx} × ${photoPx} px (~${photoInches} × ${photoInches} in @ ${effectiveDpi} DPI)`;
+
+            dimDownload.textContent =
+                `${canvasWidth} × ${canvasHeight} px (6 × 4 in @ ${effectiveDpi} DPI)`;
+
+            // Two mutually-exclusive notes: full-res can be capped; fixed-print can upscale.
+            const sourcePx = cropPx;
+            if (fullRes && scale < 1) {
+                dimWarn.textContent =
+                    `⚠ Capped to fit the browser — output reduced to ${canvasWidth} × ${canvasHeight} px (~${effectiveDpi} DPI). Still well beyond any printer.`;
+            } else if (!fullRes && sourcePx < photoPx) {
+                dimWarn.textContent =
+                    `⚠ Source crop is ${sourcePx} px but each printed photo is ${photoPx} px — upscaled, may look soft.`;
+            } else {
+                dimWarn.textContent = '';
+            }
+        }
+
+        // 3. Download functionality
+        downloadBtn.addEventListener('click', () => {
+            if (!cropper) {
+                alert("Please add and crop a photo first.");
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = '6x4_print_ready.jpg';
+            // Output as high-quality JPEG
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+        });
+
+        // 3b. Open the rendered grid in a new tab (view full-res / save from there)
+        openTabBtn.addEventListener('click', () => {
+            if (!cropper) {
+                alert("Please add and crop a photo first.");
+                return;
+            }
+
+            // Blob URL (not a data URL) so the new tab renders the image instead of downloading it
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                setTimeout(() => URL.revokeObjectURL(url), 60000);
+            }, 'image/jpeg', 0.95);
+        });
+
+        // 4. Print functionality
+        printBtn.addEventListener('click', () => {
+            if (!cropper) {
+                alert("Please add and crop a photo first.");
+                return;
+            }
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+
+            // Create a temporary window for printing exactly at 6x4 inches
+            const printWindow = window.open('', '_blank');
+            const html = `
+                <html>
+                    <head>
+                        <title>Print 6x4 Photo</title>
+                        <style>
+                            @page {
+                                size: 6in 4in; /* Set paper size to 6x4 */
+                                margin: 0;     /* Remove default browser margins */
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                background-color: #fff;
+                            }
+                            img {
+                                width: 6in;
+                                height: 4in;
+                                object-fit: cover;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <img src="${dataUrl}" />
+                        <script>
+                            // Wait for image to load before triggering print
+                            window.onload = function() {
+                                setTimeout(() => {
+                                    window.print();
+                                    window.close();
+                                }, 250);
+                            };
+                        <\/script>
+                    </body>
+                </html>
+            `;
+
+            printWindow.document.open();
+            printWindow.document.write(html);
+            printWindow.document.close();
+        });
+
+    </script>
+</body>
+</html>

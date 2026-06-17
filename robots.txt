@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://zpatel-dev.github.io/photo-grid-generator/sitemap.xml
