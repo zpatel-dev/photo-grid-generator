@@ -1,1 +1,1 @@
-# photo-gird-generator
+# photo-grid-generator
